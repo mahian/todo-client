@@ -1,18 +1,26 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 const MyTask = () => {
-    const myTasks = [1, 2, 3];
+    const { data: myTasks = [], refetch } = useQuery({
+        queryKey: ['myTasks'],
+        queryFn: async () => {
+            const res = await fetch(`http://localhost:5000/tasks`);
+            const data = await res.json();
+            return data;
+        }
+    });
     return (
         <div>
             <div class='min-h-screen'>
                 { 
-                    myTasks.map(myTask => <div class="p-4 items-center justify-center w-[680px] mx-auto mt-5 rounded-xl group sm:flex space-x-6 bg-white shadow-xl hover:rounded-2xl">
-                        <img class="mx-auto w-full h-30 block w-4/12 rounded-lg" alt="art cover" loading="lazy" src='https://www.lighthouselabs.ca/uploads/post/open_graph_image/459/Coding-vs-programming.jpg' />
+                    myTasks.map(task => <div class="p-4 items-center justify-center max-w-[680px] mx-auto mt-5 rounded-xl group sm:flex space-x-6 bg-white shadow-xl hover:rounded-2xl">
+                        <img class="mx-auto h-30 block w-4/12 rounded-lg" alt="art cover" loading="lazy" src='https://www.lighthouselabs.ca/uploads/post/open_graph_image/459/Coding-vs-programming.jpg' />
                         <div class="sm:w-8/12 pl-0 p-5">
                             <div class="space-y-2">
                                 <div class="space-y-4">
                                     <h4 class="text-md font-semibold text-cyan-900 text-justify">
-                                        First Task
+                                        {task.task}
                                     </h4>
                                 </div>
                                 <div class="flex items-center space-x-4 justify-between">
