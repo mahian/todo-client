@@ -4,6 +4,7 @@ import Spinner from '../shared/Spinner';
 
 const CompleteTask = () => {
     const [loading, setLoading] = useState(true);
+    const [btnLoading, setBtnLoading] = useState(false);
     const { data: myTasks = [], refetch } = useQuery({
         queryKey: ['myTasks'],
         queryFn: async () => {
@@ -15,21 +16,24 @@ const CompleteTask = () => {
     });
 
     const deleteTask = id => {
+        setBtnLoading(true);
         fetch(`https://todo-app-server-six.vercel.app/tasks/${id}`, {
             method: 'DELETE'
         })
             .then(res => res.json())
             .then(data => {
                 if (data.acknowledged) {
+                    setBtnLoading(false);
                     refetch();
                 } else {
-                    alert("something else")
+                    alert("something else");
                 }
             })
             .catch(err => console.log(err));
     }
 
     const completeTask = task => {
+        setBtnLoading(true)
         fetch(`https://todo-app-server-six.vercel.app/completeTask/${task._id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -38,6 +42,7 @@ const CompleteTask = () => {
             .then(response => response.json())
             .then(data => {
                 if (data.acknowledged) {
+                    setBtnLoading(false)
                     refetch();
                 }
             });
@@ -50,14 +55,14 @@ const CompleteTask = () => {
     }
     if (myTasks.length <= 0) {
         return <div className='flex items-center justify-center min-h-screen'>
-            <p class="text-6xl text-gray-400 font-bold text-center">kicu nai</p>
+            <p class="text-6xl text-gray-400 font-bold text-center">There is no task here</p>
         </div>
     }
     return (
         <div className='container mx-auto px-4'>
-            <div class='min-h-screen'>
+            <div class='min-h-screen py-20'>
                 {
-                    myTasks.map(task => <div class="p-4 items-center justify-center max-w-[680px] mx-auto mt-5 rounded-xl group sm:flex space-x-6 bg-white shadow-xl hover:rounded-2xl">
+                    myTasks.map(task => <div class="p-4 items-center justify-center max-w-[680px] mx-auto my-6 rounded-xl group sm:flex space-x-6 bg-white shadow-xl hover:rounded-2xl">
                         <img class="mx-auto h-20 block lg:w-30 rounded-lg" alt="art cover" loading="lazy" src={task.image} />
                         <div class="sm:w-8/12 pl-0 p-5">
                             <div class="space-y-2">
@@ -76,10 +81,10 @@ const CompleteTask = () => {
                                     </div>
                                     <div class="flex flex-row space-x-1">
                                         <div onClick={() => deleteTask(task._id)} class="bg-red-500 shadow-lg text-white cursor-pointer px-3 py-1 text-center justify-center items-center rounded-xl flex space-x-2 flex-row">
-                                            <span>Delete</span>
+                                        <span>{btnLoading ? "Loading..." : "Delete"}</span>
                                         </div>
                                         <div onClick={() => completeTask(task)} class="bg-green-500 shadow-lg text-white cursor-pointer px-3 text-center justify-center items-center py-1 rounded-xl flex space-x-2 flex-row">
-                                            <span>Not complete</span>
+                                        <span>{btnLoading ? "Loading..." : "not complete"}</span>
                                         </div>
                                     </div>
                                 </div>

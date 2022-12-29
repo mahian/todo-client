@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import BtnSpinner from '../shared/BtnSpinner';
 import Spinner from '../shared/Spinner';
 
 const MyTask = () => {
     const [loading, setLoading] = useState(true);
+    const [btnLoading, setBtnLoading] = useState(false);
     const { data: myTasks = [], refetch } = useQuery({
         queryKey: ['myTasks'],
         queryFn: async () => {
@@ -16,12 +18,14 @@ const MyTask = () => {
     });
 
     const deleteTask = id => {
+        setBtnLoading(true);
         fetch(`https://todo-app-server-six.vercel.app/tasks/${id}`, {
             method: 'DELETE'
         })
             .then(res => res.json())
             .then(data => {
                 if (data.acknowledged) {
+                    setBtnLoading(false);
                     refetch();
                 } else {
                     alert("something else")
@@ -31,14 +35,16 @@ const MyTask = () => {
     }
 
     const completeTask = task => {
+        setBtnLoading(true);
         fetch(`https://todo-app-server-six.vercel.app/completeTask/${task._id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({completed: true})
+            body: JSON.stringify({ completed: true })
         })
             .then(response => response.json())
             .then(data => {
                 if (data.acknowledged) {
+                    setBtnLoading(false);
                     refetch();
                 }
             });
@@ -51,14 +57,14 @@ const MyTask = () => {
     }
     if (myTasks.length <= 0) {
         return <div className='flex items-center justify-center min-h-screen'>
-            <p class="text-6xl text-gray-400 font-bold text-center">kicu nai</p>
+            <p class="text-6xl text-gray-400 font-bold text-center">There is no task here</p>
         </div>
     }
     return (
         <div className='container mx-auto px-4'>
-            <div class='min-h-screen'>
+            <div class='min-h-screen py-20'>
                 {
-                    myTasks.map(task => <div class="p-4 items-center justify-center max-w-[680px] mx-auto mt-5 rounded-xl group sm:flex space-x-6 bg-white shadow-xl hover:rounded-2xl">
+                    myTasks.map(task => <div class="p-4 items-center justify-center max-w-[680px] mx-auto my-6 rounded-xl group sm:flex space-x-6 bg-white shadow-xl hover:rounded-2xl">
                         <img class="mx-auto h-20 block lg:w-30 rounded-lg" alt="art cover" loading="lazy" src={task.image} />
                         <div class="sm:w-8/12 pl-0 p-5">
                             <div class="space-y-2">
@@ -77,7 +83,7 @@ const MyTask = () => {
                                     </div>
                                     <div class="flex flex-row space-x-1">
                                         <div onClick={() => deleteTask(task._id)} class="bg-red-500 shadow-lg text-white cursor-pointer px-3 py-1 text-center justify-center items-center rounded-xl flex space-x-2 flex-row">
-                                            <span>Delete</span>
+                                        <span>{btnLoading ? "Loading..." : "Delete"}</span>
                                         </div>
                                         <Link to={`../update-task/${task._id}`}>
                                             <div class="bg-blue-500 shadow-lg text-white cursor-pointer px-3 text-center justify-center items-center py-1 rounded-xl flex space-x-2 flex-row">
@@ -85,7 +91,7 @@ const MyTask = () => {
                                             </div>
                                         </Link>
                                         <div onClick={() => completeTask(task)} class="bg-green-500 shadow-lg text-white cursor-pointer px-3 text-center justify-center items-center py-1 rounded-xl flex space-x-2 flex-row">
-                                            <span>Complete</span>
+                                            <span>{btnLoading ? "Loading..." : "Complete"}</span>
                                         </div>
                                     </div>
                                 </div>
