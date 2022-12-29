@@ -1,18 +1,24 @@
 import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { authContext } from '../../context/UserContext';
 import AuthProvider from './AuthProvider';
 
 const Signup = () => {
     const { register, handleSubmit } = useForm();
     const { createUser } = useContext(authContext);
+    const navigate = useNavigate();
     const onSubmit = data => {
         const { email, password } = data;
         createUser(email, password)
-            .then(res => {
-                console.log(res);
-            })
+        .then(res => {
+            if(res.user){
+                navigate('/');
+                alert("successfully signed in")
+            }else{
+                alert("something wrong")
+            }
+        })
     };
     return (
         <div className='py-24'>

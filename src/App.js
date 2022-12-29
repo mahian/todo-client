@@ -8,6 +8,7 @@ import Main from './layout/Main';
 import Login from './components/authComponent/Login';
 import Signup from './components/authComponent/Signup';
 import UpdateTask from './components/todo/UpdateTask';
+import PrivetRoute from './components/privetRoute/PrivetRoute';
 
 function App() {
   const router = createBrowserRouter([
@@ -21,20 +22,20 @@ function App() {
         },
         {
           path: 'add-task',
-          element: <AddTask/>
+          element: <PrivetRoute><AddTask/></PrivetRoute>
         },
         {
           path: 'update-task/:id',
           loader: ({params})=> fetch(`https://todo-app-server-six.vercel.app/tasks/${params.id}`),
-          element: <UpdateTask/>
+          element: <PrivetRoute><UpdateTask/></PrivetRoute>
         },
         {
           path: 'my-task',
-          element: <MyTask/>
+          element: <PrivetRoute><MyTask/></PrivetRoute>
         },
         {
           path: 'completed-task',
-          element: <CompleteTask/>
+          element: <PrivetRoute><CompleteTask/></PrivetRoute>
         },
         {
           path: 'login',

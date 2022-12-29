@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { authContext } from '../../context/UserContext';
 const imageHostKey = "0ff3cea0cbb5e45eaae23b9299ecee4c";
 
 const AddTask = () => {
+    const {user} = useContext(authContext);
     const handleSubmit = event => {
         event.preventDefault();
         const form = event.target;
@@ -19,7 +21,7 @@ const AddTask = () => {
         })
             .then(res => res.json())
             .then(imgData => {
-                const taskObj = { task, desc, image: imgData.data.url, completed: false }
+                const taskObj = { task, desc, image: imgData.data.url, completed: false, email: user?.email }
                 fetch('https://todo-app-server-six.vercel.app/tasks', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

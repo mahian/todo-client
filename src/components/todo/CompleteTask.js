@@ -1,14 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { authContext } from '../../context/UserContext';
 import Spinner from '../shared/Spinner';
 
 const CompleteTask = () => {
     const [loading, setLoading] = useState(true);
     const [btnLoading, setBtnLoading] = useState(false);
+    const {user} = useContext(authContext);
     const { data: myTasks = [], refetch } = useQuery({
         queryKey: ['myTasks'],
         queryFn: async () => {
-            const res = await fetch(`https://todo-app-server-six.vercel.app/completedTask`);
+            const res = await fetch(`https://todo-app-server-six.vercel.app/completedTask?email=${user.email}`);
             const data = await res.json();
             setLoading(false);
             return data;
