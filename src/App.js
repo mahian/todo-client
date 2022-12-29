@@ -5,7 +5,9 @@ import AddTask from './components/todo/AddTask';
 import CompleteTask from './components/todo/CompleteTask';
 import MyTask from './components/todo/MyTask';
 import Main from './layout/Main';
-import Login from './components/Login';
+import Login from './components/authComponent/Login';
+import Signup from './components/authComponent/Signup';
+import UpdateTask from './components/todo/UpdateTask';
 
 function App() {
   const router = createBrowserRouter([
@@ -22,6 +24,11 @@ function App() {
           element: <AddTask/>
         },
         {
+          path: 'update-task/:id',
+          loader: ({params})=> fetch(`https://todo-app-server-six.vercel.app/tasks/${params.id}`),
+          element: <UpdateTask/>
+        },
+        {
           path: 'my-task',
           element: <MyTask/>
         },
@@ -32,6 +39,10 @@ function App() {
         {
           path: 'login',
           element: <Login/>
+        },
+        {
+          path: 'signup',
+          element: <Signup/>
         },
       ]
     }

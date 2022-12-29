@@ -1,19 +1,73 @@
-import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import Spinner from '../shared/Spinner';
 
 const CompleteTask = () => {
-    const completeTasks = [1, 2];
+    const [loading, setLoading] = useState(true);
+    const { data: myTasks = [], refetch } = useQuery({
+        queryKey: ['myTasks'],
+        queryFn: async () => {
+            const res = await fetch(`https://todo-app-server-six.vercel.app/completedTask`);
+            const data = await res.json();
+            setLoading(false);
+            return data;
+        }
+    });
+
+    const deleteTask = id => {
+        fetch(`https://todo-app-server-six.vercel.app/tasks/${id}`, {
+            method: 'DELETE'
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.acknowledged) {
+                    refetch();
+                } else {
+                    alert("something else")
+                }
+            })
+            .catch(err => console.log(err));
+    }
+
+    const completeTask = task => {
+        fetch(`https://todo-app-server-six.vercel.app/completeTask/${task._id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ completed: false })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.acknowledged) {
+                    refetch();
+                }
+            });
+    }
+
+    if (loading) {
+        return <div className='flex items-center justify-center h-screen'>
+            <Spinner />
+        </div>
+    }
+    if (myTasks.length <= 0) {
+        return <div className='flex items-center justify-center min-h-screen'>
+            <p class="text-6xl text-gray-400 font-bold text-center">kicu nai</p>
+        </div>
+    }
     return (
-        <div>
+        <div className='container mx-auto px-4'>
             <div class='min-h-screen'>
                 {
-                    completeTasks.map(myTask => <div class="p-4 items-center justify-center w-[680px] mx-auto mt-5 rounded-xl group sm:flex space-x-6 bg-white shadow-xl hover:rounded-2xl">
-                        <img class="mx-auto w-full h-30 block w-4/12 rounded-lg" alt="art cover" loading="lazy" src='https://www.lighthouselabs.ca/uploads/post/open_graph_image/459/Coding-vs-programming.jpg' />
+                    myTasks.map(task => <div class="p-4 items-center justify-center max-w-[680px] mx-auto mt-5 rounded-xl group sm:flex space-x-6 bg-white shadow-xl hover:rounded-2xl">
+                        <img class="mx-auto h-20 block lg:w-30 rounded-lg" alt="art cover" loading="lazy" src={task.image} />
                         <div class="sm:w-8/12 pl-0 p-5">
                             <div class="space-y-2">
                                 <div class="space-y-4">
                                     <h4 class="text-md font-semibold text-cyan-900 text-justify">
-                                        First Task
+                                        {task.task}
                                     </h4>
+                                    <p class="text-md text-gray-400-900 text-justify">
+                                        {task.desc}
+                                    </p>
                                 </div>
                                 <div class="flex items-center space-x-4 justify-between">
                                     <div class="text-grey-500 flex flex-row space-x-1  my-4">
@@ -21,11 +75,11 @@ const CompleteTask = () => {
                                         <p class="text-xs">2 hours ago</p>
                                     </div>
                                     <div class="flex flex-row space-x-1">
-                                        <div class="bg-red-500 shadow-lg text-white cursor-pointer px-3 py-1 text-center justify-center items-center rounded-xl flex space-x-2 flex-row">
+                                        <div onClick={() => deleteTask(task._id)} class="bg-red-500 shadow-lg text-white cursor-pointer px-3 py-1 text-center justify-center items-center rounded-xl flex space-x-2 flex-row">
                                             <span>Delete</span>
                                         </div>
-                                        <div class="bg-green-500 shadow-lg text-white cursor-pointer px-3 text-center justify-center items-center py-1 rounded-xl flex space-x-2 flex-row">
-                                            <span>Complete</span>
+                                        <div onClick={() => completeTask(task)} class="bg-green-500 shadow-lg text-white cursor-pointer px-3 text-center justify-center items-center py-1 rounded-xl flex space-x-2 flex-row">
+                                            <span>Undo</span>
                                         </div>
                                     </div>
                                 </div>

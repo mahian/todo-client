@@ -1,7 +1,9 @@
 import React from 'react';
+import { useLoaderData } from 'react-router-dom';
 const imageHostKey = "0ff3cea0cbb5e45eaae23b9299ecee4c";
 
-const AddTask = () => {
+const UpdateTask = () => {
+    const loadedTask = useLoaderData();
     const handleSubmit = event => {
         event.preventDefault();
         const form = event.target;
@@ -19,9 +21,9 @@ const AddTask = () => {
         })
             .then(res => res.json())
             .then(imgData => {
-                const taskObj = { task, desc, image: imgData.data.url, completed: false }
-                fetch('https://todo-app-server-six.vercel.app/tasks', {
-                    method: 'POST',
+                const taskObj = { task, desc, image: imgData.data.url }
+                fetch(`https://todo-app-server-six.vercel.app/tasks/${loadedTask._id}`, {
+                    method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(taskObj)
                 })
@@ -34,6 +36,7 @@ const AddTask = () => {
                     });
             })
     }
+    
     return (
         <div className=''>
             <div className="w-full max-w-xl m-auto my-20 py-20">
@@ -42,14 +45,14 @@ const AddTask = () => {
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                             Task Name
                         </label>
-                        <input name='task' className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="Task Name" />
+                        <input name='task' defaultValue={loadedTask.task} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="Task Name" />
                     </div>
 
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                             Task description
                         </label>
-                        <textarea name='desc' className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="Task description" />
+                        <textarea name='desc' defaultValue={loadedTask.desc} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="Task description" />
                     </div>
 
                     <div className="mb-4">
@@ -70,4 +73,4 @@ const AddTask = () => {
     );
 };
 
-export default AddTask;
+export default UpdateTask;

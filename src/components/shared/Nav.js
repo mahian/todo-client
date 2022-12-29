@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { authContext } from '../../context/UserContext';
 
 const Nav = () => {
+    const {user, logOut} = useContext(authContext);
     return (
         <div className="bg-gray-900 px-4">
             <nav className="container mx-auto flex items-center justify-between flex-wrap py-6">
@@ -27,7 +29,11 @@ const Nav = () => {
                         </Link>
                     </div>
                     <div>
-                        <Link to="login" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-600 hover:bg-white mt-4 lg:mt-0">Get Started</Link>
+                        {
+                            !user?
+                            <Link to="login" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-600 hover:bg-white mt-4 lg:mt-0">Login</Link>:
+                            <button onClick={()=> logOut()} className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-600 hover:bg-white mt-4 lg:mt-0">Logout</button>
+                        }
                     </div>
                 </div>
             </nav>
