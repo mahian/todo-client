@@ -79,7 +79,7 @@ const CompleteTask = () => {
                                             <span>Delete</span>
                                         </div>
                                         <div onClick={() => completeTask(task)} class="bg-green-500 shadow-lg text-white cursor-pointer px-3 text-center justify-center items-center py-1 rounded-xl flex space-x-2 flex-row">
-                                            <span>Undo</span>
+                                            <span>Not complete</span>
                                         </div>
                                     </div>
                                 </div>
